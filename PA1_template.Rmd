@@ -37,12 +37,21 @@ median(data2$steps, na.rm=TRUE)
 library(plyr)
 data3 <- ddply(data,.(interval),summarize,steps=mean(steps, na.rm=TRUE))
 ggplot(data3, aes(x=interval,y=steps)) + geom_line()
+```
+
+# Interval with max number of steps
+```{r, echo=TRUE}
 data3[data3$steps==max(data3$steps),]
+```
+
+# Total number of missing values
+```{r, echo=TRUE}
+sum(is.na(data$steps))
 ```
 
 # Populating missing values
 ```{r, echo=TRUE}
-sum(is.na(data$steps))
+
 data4 <- data
 for (i in 1:nrow(data)){ 
     if(is.na(data[i,1])){ 

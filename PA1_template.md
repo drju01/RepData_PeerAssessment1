@@ -81,7 +81,7 @@ data3[data3$steps==max(data3$steps),]
 ## 104      835 206.1698
 ```
 
-# Populating missing values
+# Total number of missing values
 
 ```r
 sum(is.na(data$steps))
@@ -90,6 +90,8 @@ sum(is.na(data$steps))
 ```
 ## [1] 2304
 ```
+
+# Populating missing values
 
 ```r
 data4 <- data
@@ -109,7 +111,7 @@ g <- ggplot(data5,aes(x=date,y=steps))+geom_bar(stat='identity')
 g + scale_x_date(labels = date_format("%m/%d")) + theme(axis.text.x = element_text(angle=90))
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png) 
 
 # Mean and median after filling in missing values
 
@@ -137,5 +139,5 @@ data6 <- ddply(data4,.(weekday,interval),summarize,steps=mean(steps, na.rm=TRUE)
 ggplot(data6, aes(x=interval,y=steps)) + facet_grid(weekday ~ .)+geom_line()
 ```
 
-![plot of chunk unnamed-chunk-9](figure/unnamed-chunk-9-1.png) 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
 
