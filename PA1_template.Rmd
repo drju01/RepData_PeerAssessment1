@@ -1,25 +1,74 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "PA1_template"
+author: "drju01"
+date: "Sunday, April 19, 2015"
+output: html_document
 ---
 
+## Transforming input data
 
-## Loading and preprocessing the data
+```{r, echo=TRUE}
+Sys.setlocale("LC_TIME", "English")
+data <- read.csv("activity.csv")
+data$date <- as.Date(data$date)
+data2 <- aggregate(data$steps,list(data$date),sum)
+names(data2) <- c("date","steps")
+```
+  
+  
+# Plotting histogram
+```{r, echo=TRUE}
+library(ggplot2)
+library(scales)
+g <- ggplot(data2,aes(x=date,y=steps))+geom_bar(stat='identity')
+g + scale_x_date(labels = date_format("%m/%d")) + theme(axis.text.x = element_text(angle=90))
+```
+  
+  
+# Calculating mean and median
+```{r, echo=TRUE}
+mean(data2$steps, na.rm=TRUE)
+median(data2$steps, na.rm=TRUE)
+```
+    
 
+# Generating time series plot
+```{r, echo=TRUE}
+library(plyr)
+data3 <- ddply(data,.(interval),summarize,steps=mean(steps, na.rm=TRUE))
+ggplot(data3, aes(x=interval,y=steps)) + geom_line()
+data3[data3$steps==max(data3$steps),]
+```
 
+# Populating missing values
+```{r, echo=TRUE}
+sum(is.na(data$steps))
+data4 <- data
+for (i in 1:nrow(data)){ 
+    if(is.na(data[i,1])){ 
+        data4[i,1] <- data3[data3$interval==data4[i,3],1]
+    } 
+}
+```
 
-## What is mean total number of steps taken per day?
+# Histograms after filling in missing values
+```{r, echo=TRUE}
+data5 <- aggregate(data4$steps,list(data$date),sum)
+names(data5) <- c("date","steps")
+g <- ggplot(data5,aes(x=date,y=steps))+geom_bar(stat='identity')
+g + scale_x_date(labels = date_format("%m/%d")) + theme(axis.text.x = element_text(angle=90))
+```
 
+# Mean and median after filling in missing values
+```{r, echo=TRUE}
+mean(data4$steps)
+median(data4$steps)
+```
 
+# Plot for weekend vs weekday
+```{r, echo=TRUE}
+data4$weekday <- factor(ifelse(weekdays(data4$date) %in% c('Friday','Saturday','Sunday'),"weekend","weekday"))
+data6 <- ddply(data4,.(weekday,interval),summarize,steps=mean(steps, na.rm=TRUE))
+ggplot(data6, aes(x=interval,y=steps)) + facet_grid(weekday ~ .)+geom_line()
+```
 
-## What is the average daily activity pattern?
-
-
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
